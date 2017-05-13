@@ -3,6 +3,9 @@ apply plugin: 'com.android.application'
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 android {
@@ -34,5 +37,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 
+    compile 'com.spotify.android:auth:1.0.0-alpha'
     compile 'com.github.kaaes:spotify-web-api-android:0.4.1'
 }
