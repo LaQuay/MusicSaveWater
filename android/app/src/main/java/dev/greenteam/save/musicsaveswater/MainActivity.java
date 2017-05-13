@@ -2,6 +2,7 @@ package dev.greenteam.save.musicsaveswater;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -31,11 +32,12 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int SECTION_MAIN_FRAGMENT = 1;
-    private Toolbar toolbar;
-
     private static final String CLIENT_ID = "5b2bbb012c6d425f83c577444dc01eb6";
     private static final String REDIRECT_URI = "musicsaveswater://callback";
+    private Toolbar toolbar;
+    private SpotifyService spotifyService;
     private String mAccessToken;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,21 @@ public class MainActivity extends AppCompatActivity
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
         onSectionAttached(SECTION_MAIN_FRAGMENT);
 
-        callSpotify();
+        logInSpotify();
+
+        //Get sample album when SpotifyService available
+        Runnable sampleRunnable = new Runnable() {
+            public void run() {
+                if (spotifyService != null) {
+                    Log.e(TAG, "Servicio disponible");
+                    getAlbum("2dIGnmEIy1WZIcZCFSj6i8");
+                } else {
+                    Log.e(TAG, "Servicio aun no disponible");
+                    handler.postDelayed(this, 500);
+                }
+            }
+        };
+        handler.postDelayed(sampleRunnable, 1000);
     }
 
     @Override
@@ -150,29 +166,26 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+        AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
 
         Log.e(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
 
         if (REQUEST_CODE == requestCode) {
             mAccessToken = response.getAccessToken();
-            Log.e(TAG, "TOKEN RECEIVED: " + mAccessToken);
-            //updateTokenView();
+            Log.e(TAG, "TOKEN: " + mAccessToken);
+            onTokenAvailable();
         }
     }
 
-    private void callSpotify() {
-        openLoginWindow();
+    private void onTokenAvailable() {
+        SpotifyApi spotifyApi = new SpotifyApi();
+        spotifyApi.setAccessToken(mAccessToken);
 
-        /*SpotifyApi api = new SpotifyApi();
+        spotifyService = spotifyApi.getService();
+    }
 
-        // Most (but not all) of the Spotify Web API endpoints require authorisation.
-        // If you know you'll only use the ones that don't require authorisation you can skip this step
-        api.setAccessToken("myAccessToken");
-
-        SpotifyService spotify = api.getService();
-
-        spotify.getAlbum("2dIGnmEIy1WZIcZCFSj6i8", new Callback<Album>() {
+    private void getAlbum(String albumID) {//"2dIGnmEIy1WZIcZCFSj6i8"
+        spotifyService.getAlbum(albumID, new Callback<Album>() {
             @Override
             public void success(Album album, Response response) {
                 Log.e(TAG, "Album success: " + album.name);
@@ -182,12 +195,24 @@ public class MainActivity extends AppCompatActivity
             public void failure(RetrofitError error) {
                 Log.e(TAG, "Album failure: " + error.toString());
             }
-        });*/
+        });
     }
 
-    private void openLoginWindow() {
+    private void logInSpotify() {
         final AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
-                .setScopes(new String[]{"user-read-private", "playlist-read", "playlist-read-private", "streaming"})
+                .setScopes(new String[]{"playlist-read-private",
+                        "playlist-read-collaborative",
+                        "playlist-modify-public",
+                        "playlist-modify-private",
+                        "streaming",
+                        "user-follow-modify",
+                        "user-follow-read",
+                        "user-library-read",
+                        "user-library-modify",
+                        "user-read-private",
+                        "user-read-birthdate",
+                        "user-read-email",
+                        "user-top-read"})
                 .build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
