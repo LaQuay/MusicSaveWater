@@ -84,7 +84,7 @@ def tracks(type, token):
 
 
 @app.route("/user/<user_id>", methods=['PUT'])
-def put_user_shower(user_id):
+def put_user(user_id):
     cur = mysql.connection.cursor()
     cur.execute('''INSERT INTO users (user_id)
                           VALUES ('''+user_id+''');''')
