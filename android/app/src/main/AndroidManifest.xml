@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".LoginActivity"
+            android:name="dev.greenteam.save.musicsaveswater.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -24,17 +24,22 @@
         </activity>
 
         <activity
-            android:name=".SignUpActivity"
+            android:name="dev.greenteam.save.musicsaveswater.SignUpActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="dev.greenteam.save.musicsaveswater.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".ShowerActivity"
+            android:name="dev.greenteam.save.musicsaveswater.ShowerActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="dev.greenteam.save.musicsaveswater.ConsumosActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
