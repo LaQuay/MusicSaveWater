@@ -11,7 +11,7 @@ def hello():
     return "Hello World!"
 
 
-@app.route("/<string:type>/tracks/<string:token>", methods=['GET'])
+@app.route("/<type>/tracks/<token>", methods=['GET'])
 def tracks(type, token):
     sp.set_user_token(token)
     return sp.current_user_top_tracks()
