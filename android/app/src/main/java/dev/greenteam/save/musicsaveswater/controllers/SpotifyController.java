@@ -7,13 +7,13 @@ import android.util.Log;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
-
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Album;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import com.spotify.sdk.android.player.Config;
+import com.spotify.sdk.android.player.ConnectionStateCallback;
+import com.spotify.sdk.android.player.Error;
+import com.spotify.sdk.android.player.Player;
+import com.spotify.sdk.android.player.PlayerEvent;
+import com.spotify.sdk.android.player.Spotify;
+import com.spotify.sdk.android.player.SpotifyPlayer;
 
 import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
 
@@ -21,16 +21,20 @@ import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
  * Created by LaQuay on 14/05/2017.
  */
 
-public class SpotifyController {
+public class SpotifyController implements
+        SpotifyPlayer.NotificationCallback, ConnectionStateCallback {
     public static final String TAG = SpotifyController.class.getSimpleName();
     private static final String CLIENT_ID = "5b2bbb012c6d425f83c577444dc01eb6";
     private static final String REDIRECT_URI = "musicsaveswater://callback";
     private static SpotifyController instance;
-    private SpotifyService spotifyService;
+    private final SpotifyPlayer.NotificationCallback notificationCallback;
+    private final ConnectionStateCallback connectionStateCallback;
     private String mAccessToken;
+    private Player mPlayer;
 
     private SpotifyController(Context ctx) {
-        logInSpotify(ctx);
+        notificationCallback = this;
+        connectionStateCallback = this;
     }
 
     public static SpotifyController getInstance(Context ctx) {
@@ -46,8 +50,8 @@ public class SpotifyController {
         }
     }
 
-    public SpotifyService getSpotifyService() {
-        return spotifyService;
+    public void start(Context context) {
+        logInSpotify(context);
     }
 
     public String getAccessToken() {
@@ -55,33 +59,31 @@ public class SpotifyController {
     }
 
     public void setAccessToken(String mAccessToken) {
-        Log.e(TAG, "TOKEN: " + mAccessToken);
         this.mAccessToken = mAccessToken;
     }
 
-    public void onTokenAvailable() {
-        SpotifyApi spotifyApi = new SpotifyApi();
-        spotifyApi.setAccessToken(mAccessToken);
+    public void onTokenAvailable(Context context, AuthenticationResponse response) {
+        setAccessToken(response.getAccessToken());
+        Config playerConfig = new Config(context, response.getAccessToken(), CLIENT_ID);
 
-        spotifyService = spotifyApi.getService();
-    }
-
-    public void getAlbum(String albumID, final SpotifyAPICalls callbackSpotifyAPICalls) {//"2dIGnmEIy1WZIcZCFSj6i8"
-        spotifyService.getAlbum(albumID, new Callback<Album>() {
+        Spotify.getPlayer(playerConfig, context, new SpotifyPlayer.InitializationObserver() {
             @Override
-            public void success(Album album, Response response) {
-                if (callbackSpotifyAPICalls != null) {
-                    callbackSpotifyAPICalls.onGetAlbumResponseSuccess(album, response);
-                }
+            public void onInitialized(SpotifyPlayer spotifyPlayer) {
+                mPlayer = spotifyPlayer;
+                mPlayer.addConnectionStateCallback(connectionStateCallback);
+                mPlayer.addNotificationCallback(notificationCallback);
+
+                mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
             }
 
             @Override
-            public void failure(RetrofitError error) {
-                if (callbackSpotifyAPICalls != null) {
-                    callbackSpotifyAPICalls.onGetAlbumResponseFailure(error);
-                }
+            public void onError(Throwable throwable) {
+                Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
             }
         });
+    }
+
+    public void selectTrack(final Context context, String idTrack) {
     }
 
     private void logInSpotify(Context context) {
@@ -104,9 +106,48 @@ public class SpotifyController {
         AuthenticationClient.openLoginActivity((Activity) context, REQUEST_CODE, request);
     }
 
-    public interface SpotifyAPICalls {
-        void onGetAlbumResponseSuccess(Album album, Response response);
+    @Override
+    public void onPlaybackEvent(PlayerEvent playerEvent) {
+        Log.d("MainActivity", "Playback event received: " + playerEvent.name());
+        switch (playerEvent) {
+            // Handle event type as necessary
+            default:
+                break;
+        }
+    }
 
-        void onGetAlbumResponseFailure(RetrofitError retrofitError);
+    @Override
+    public void onPlaybackError(Error error) {
+        Log.d("MainActivity", "Playback error received: " + error.name());
+        switch (error.name()) {
+            // Handle error type as necessary
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onLoggedIn() {
+        Log.d("MainActivity", "User logged in");
+    }
+
+    @Override
+    public void onLoggedOut() {
+        Log.d("MainActivity", "User logged out");
+    }
+
+    @Override
+    public void onLoginFailed(Error error) {
+        Log.d("MainActivity", "Login failed");
+    }
+
+    @Override
+    public void onTemporaryError() {
+        Log.d("MainActivity", "Temporary error occurred");
+    }
+
+    @Override
+    public void onConnectionMessage(String message) {
+        Log.d("MainActivity", "Received connection message: " + message);
     }
 }

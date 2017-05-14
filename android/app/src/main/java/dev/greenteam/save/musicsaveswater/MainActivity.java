@@ -2,7 +2,6 @@ package dev.greenteam.save.musicsaveswater;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,19 +18,14 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import dev.greenteam.save.musicsaveswater.controllers.SpotifyController;
-import kaaes.spotify.webapi.android.models.Album;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SpotifyController.SpotifyAPICalls {
+        implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int SECTION_MAIN_FRAGMENT = 1;
     private Toolbar toolbar;
-    private Handler handler = new Handler();
-    private SpotifyController.SpotifyAPICalls callbackSpotifyAPICalls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,32 +50,7 @@ public class MainActivity extends AppCompatActivity
         onSectionAttached(SECTION_MAIN_FRAGMENT);
 
         //Start Spotify Service
-        callbackSpotifyAPICalls = this;
-        SpotifyController.getInstance(this).getSpotifyService();
-
-        //Get sample album when SpotifyService available
-        Runnable sampleRunnable = new Runnable() {
-            public void run() {
-                if (SpotifyController.getInstance(getBaseContext()).getSpotifyService() != null) {
-                    Log.e(TAG, "Servicio disponible");
-                    SpotifyController.getInstance(getBaseContext()).getAlbum("2dIGnmEIy1WZIcZCFSj6i8", callbackSpotifyAPICalls);
-                } else {
-                    Log.e(TAG, "Servicio aun no disponible");
-                    handler.postDelayed(this, 500);
-                }
-            }
-        };
-        handler.postDelayed(sampleRunnable, 1000);
-    }
-
-    @Override
-    public void onGetAlbumResponseSuccess(Album album, Response response) {
-        Log.e(TAG, "Album success: " + album.name);
-    }
-
-    @Override
-    public void onGetAlbumResponseFailure(RetrofitError error) {
-        Log.e(TAG, "Album failure: " + error.toString());
+        SpotifyController.getInstance(this).start(this);
     }
 
     @Override
@@ -172,13 +141,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
 
-        Log.e(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
-
-        if (REQUEST_CODE == requestCode) {
-            SpotifyController.getInstance(getBaseContext()).setAccessToken(response.getAccessToken());
-            SpotifyController.getInstance(getBaseContext()).onTokenAvailable();
+        // Check if result comes from the correct activity
+        if (requestCode == REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+            if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                SpotifyController.getInstance(this).onTokenAvailable(getBaseContext(), response);
+                Log.e(TAG, "TOKEN:" + SpotifyController.getInstance(this).getAccessToken());
+            }
         }
     }
 }
