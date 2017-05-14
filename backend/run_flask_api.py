@@ -1,7 +1,6 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from spotify_module import Spotishower
 from db_module import DBController
-import request, jsonify
 
 app = Flask(__name__)
 sp = Spotishower()
