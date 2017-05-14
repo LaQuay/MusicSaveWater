@@ -1,6 +1,6 @@
 from flask import Flask
-from backend.spotify_module import Spotishower
-from backend.db_module import DBController
+from spotify_module import Spotishower
+from db_module import DBController
 
 app = Flask(__name__)
 sp = Spotishower()
