@@ -17,14 +17,13 @@ def tracks(type, token):
 
 
 @app.route("/achievements", methods=['PUT'])
-def put_(user_id):
+def put_achievement(user_id):
     return
 
 
 @app.route("/<string:user_id>/achievements", methods=['GET'])
-def tracks(user_id):
+def get_achievements(user_id):
     return
-
 
 if __name__ == "__main__":
     app.run(port=8888)
