@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         onSectionAttached(SECTION_MAIN_FRAGMENT);
 
         //Start Spotify Service
-        SpotifyController.getInstance(this).start(this);
+        //SpotifyController.getInstance(this).start(this);
     }
 
     @Override

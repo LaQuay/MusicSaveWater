@@ -1,12 +1,12 @@
 package dev.greenteam.save.musicsaveswater;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 /**
  * Created by LaQuay on 13/05/2017.
@@ -17,9 +17,10 @@ public class MainFragmentActivity extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private View rootView;
-    private View baseSnackBarView;
-    private Snackbar snackBar;
     private LayoutInflater inflater;
+    private ImageView gogogoButton;
+    private ImageView medioButton;
+    private ImageView spaButton;
 
     public static MainFragmentActivity newInstance(int position) {
         MainFragmentActivity fragment = new MainFragmentActivity();
@@ -36,10 +37,6 @@ public class MainFragmentActivity extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
         this.inflater = inflater;
 
-        baseSnackBarView = getActivity().findViewById(R.id.drawer_layout);
-
-        Toast.makeText(getActivity(), "HOLA!", Toast.LENGTH_SHORT).show();
-
         setUpElements();
         setUpListeners();
 
@@ -47,10 +44,35 @@ public class MainFragmentActivity extends Fragment {
     }
 
     private void setUpElements() {
-
+        gogogoButton = (ImageView) rootView.findViewById(R.id.fragment_main_gogogo);
+        medioButton = (ImageView) rootView.findViewById(R.id.fragment_main_medio);
+        spaButton = (ImageView) rootView.findViewById(R.id.fragment_main_spa);
     }
 
     private void setUpListeners() {
-
+        gogogoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getContext(), ShowerActivity.class);
+                myIntent.putExtra("key", ""); //Optional parameters
+                startActivity(myIntent);
+            }
+        });
+        medioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getContext(), ShowerActivity.class);
+                myIntent.putExtra("key", ""); //Optional parameters
+                startActivity(myIntent);
+            }
+        });
+        spaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(getContext(), ShowerActivity.class);
+                myIntent.putExtra("key", ""); //Optional parameters
+                startActivity(myIntent);
+            }
+        });
     }
 }
