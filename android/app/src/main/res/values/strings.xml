@@ -1,10 +1,8 @@
 <resources>
-    <string name="app_name">MusicSavesWater</string>
+    <string name="app_name">SaveAndSound</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
 
     <string name="com_spotify_sdk_redirect_scheme">musicsaveswater</string>
     <string name="com_spotify_sdk_redirect_host">callback</string>
