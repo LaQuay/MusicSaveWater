@@ -83,11 +83,11 @@ def tracks(type, token):
     return jsonify(sp.current_user_top_tracks())
 
 
-@app.route("/user/<user_id>", methods=['PUT'])
-def put_user(user_id):
+@app.route("/user/<user_id_param>", methods=['PUT'])
+def put_user(user_id_param):
     cur = mysql.connection.cursor()
     cur.execute('''INSERT INTO users (user_id)
-                          VALUES ('''+user_id+''');''')
+                          VALUES (user_id_param);''')
     return
 
 
