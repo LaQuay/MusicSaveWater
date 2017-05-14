@@ -21,7 +21,7 @@ class Spotishower:
             # ranges = ['short_term', 'medium_term', 'long_term']
             ranges = ['medium_term']
             for range in ranges:
-                results = sp.current_user_top_tracks(time_range=range, limit=10)
+                results = sp.current_user_top_tracks(time_range=range, limit=self.limit)
                 print(results['items'])
                 return results['items']
 
