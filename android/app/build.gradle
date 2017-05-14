@@ -38,5 +38,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.spotify.android:auth:1.0.0-alpha'
-    compile 'com.github.kaaes:spotify-web-api-android:0.4.1'
+    compile 'com.spotify.sdk:spotify-player-24-noconnect-2.20b@aar'
+
+    compile 'com.android.volley:volley:1.0.0'
 }
