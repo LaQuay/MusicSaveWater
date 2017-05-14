@@ -64,7 +64,7 @@ public class SpotifyController implements
 
     public void onTokenAvailable(Context context, AuthenticationResponse response) {
         setAccessToken(response.getAccessToken());
-        Config playerConfig = new Config(context, response.getAccessToken(), CLIENT_ID);
+        Config playerConfig = new Config(context, mAccessToken, CLIENT_ID);
 
         Spotify.getPlayer(playerConfig, context, new SpotifyPlayer.InitializationObserver() {
             @Override
@@ -72,8 +72,6 @@ public class SpotifyController implements
                 mPlayer = spotifyPlayer;
                 mPlayer.addConnectionStateCallback(connectionStateCallback);
                 mPlayer.addNotificationCallback(notificationCallback);
-
-                mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
             }
 
             @Override
@@ -129,6 +127,10 @@ public class SpotifyController implements
     @Override
     public void onLoggedIn() {
         Log.d("MainActivity", "User logged in");
+        //mPlayer.playUri(null, "spotify:track:7pnsr6laUDu11d9pNFLkPV", 0, 0);
+        mPlayer.playUri(null, "spotify:user:spotify:playlist:37i9dQZEVXcSHq5GCcuZPu", 0, 0);
+        //mPlayer.queue(null, "spotify:track:2C0KFbb4v9CNWR5c9jWcKC");
+        //mPlayer.skipToNext(null);
     }
 
     @Override
