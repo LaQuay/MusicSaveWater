@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="?attr/actionBarSize"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo_modo_ducha"
+    android:orientation="vertical"
+    android:paddingEnd="30dp"
+    android:paddingStart="30dp">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.95"
+        android:adjustViewBounds="true"
+        android:src="@drawable/boton_go_go_go" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.95"
+        android:adjustViewBounds="true"
+        android:src="@drawable/boton_medio" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="15dp"
+        android:layout_weight="0.95"
+        android:adjustViewBounds="true"
+        android:src="@drawable/boton_spa" />
 
 </LinearLayout>
