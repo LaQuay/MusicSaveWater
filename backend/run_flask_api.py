@@ -10,7 +10,7 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'SaveSound'
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
 mysql = MySQL(app)
 
 
@@ -83,6 +83,14 @@ def tracks(type, token):
     return jsonify(sp.current_user_top_tracks())
 
 
+@app.route("/user/<user_id>", methods=['PUT'])
+def put_user_shower(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute('''INSERT INTO users (user_id)
+                          VALUES ('''+user_id+''');''')
+    return
+
+
 @app.route("/user/<user_id>/showers", methods=['PUT'])
 def put_user_shower(user_id):
     data = request.form
@@ -92,7 +100,7 @@ def put_user_shower(user_id):
     shower_type = ""
 
     cur = mysql.connection.cursor()
-    cur.execute('''INSERT INTO table_name (user_id, shower_type, duration, date_time)
+    cur.execute('''INSERT INTO showers (user_id, shower_type, duration, date_time)
                           VALUES ('''+user_id+''','''+shower_type+''','''+duration+''','''+date_time+''');''')
     #user + type + duration + date
     return
