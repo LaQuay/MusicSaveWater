@@ -10,7 +10,7 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'root'
 app.config['MYSQL_DB'] = 'SaveSound'
 app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'root'
 mysql = MySQL(app)
 
 
@@ -20,8 +20,6 @@ def bye():
     cur.execute('''SELECT user, host FROM mysql.user''')
     rv = cur.fetchall()
     return str(rv)
-
-#user + type + duration + date
 
 @app.route("/createDatabase")
 def createDatabase():
@@ -87,10 +85,17 @@ def tracks(type, token):
 
 @app.route("/user/<user_id>/showers", methods=['PUT'])
 def put_user_shower(user_id):
+    data = request.form
+    user_id = ""
+    duration = ""
+    date_time = ""
+    shower_type = ""
 
+    cur = mysql.connection.cursor()
+    cur.execute('''INSERT INTO table_name (user_id, shower_type, duration, date_time)
+                          VALUES ('''+user_id+''','''+shower_type+''','''+duration+''','''+date_time+''');''')
     #user + type + duration + date
     return
-
 
 #@app.route("/user/<user_id>/achievements", methods=['PUT'])
 #def put_user_achievement(user_id):
