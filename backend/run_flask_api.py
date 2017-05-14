@@ -1,6 +1,7 @@
 from flask import Flask
 from spotify_module import Spotishower
 from db_module import DBController
+import request, jsonify
 
 app = Flask(__name__)
 sp = Spotishower()
@@ -14,7 +15,7 @@ def hello():
 @app.route("/<type>/tracks/<token>", methods=['GET'])
 def tracks(type, token):
     sp.set_user_token(token)
-    return sp.current_user_top_tracks()
+    return jsonify(sp.current_user_top_tracks())
 
 
 @app.route("/achievements", methods=['PUT'])
