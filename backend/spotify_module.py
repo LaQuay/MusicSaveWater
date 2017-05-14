@@ -24,6 +24,5 @@ class Spotishower:
         else:
             print("Can't get token for", self.username)
 
-
-#sp = Spotishower()
-#sp.current_user_top_tracks()
+# sp = Spotishower()
+# sp.current_user_top_tracks()
