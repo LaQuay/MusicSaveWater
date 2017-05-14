@@ -8,7 +8,7 @@ sp = Spotishower()
 
 @app.route("/helloworld")
 def hello():
-    return "Hello World!"
+    return "A ella le gusta la gasoliiinaa! XD"
 
 
 @app.route("/<type>/tracks/<token>", methods=['GET'])
@@ -17,14 +17,30 @@ def tracks(type, token):
     return jsonify(sp.current_user_top_tracks())
 
 
-@app.route("/achievements", methods=['PUT'])
-def put_achievement(user_id):
+@app.route("/user/<user_id>/achievements", methods=['PUT'])
+def put_user_achievement(user_id):
     return
 
 
-@app.route("/<string:user_id>/achievements", methods=['GET'])
-def get_achievements(user_id):
+@app.route("/contract/<contract_id>/achievements", methods=['PUT'])
+def put_contract_achievement(contract_id):
     return
+
+
+@app.route("/user/<user_id>/achievements", methods=['GET'])
+def get_user_achievements(user_id):
+    return
+
+
+@app.route("/contract/<contract_id>/achievements", methods=['GET'])
+def get_contract_achievements(contract_id):
+    return
+
+
+@app.route("/user/<user_id>/showers", methods=['PUT'])
+def put_user_shower(user_id):
+    return
+
 
 if __name__ == "__main__":
     app.run(port=80,
