@@ -87,7 +87,7 @@ def tracks(type, token):
 def put_user(user_id_param):
     cur = mysql.connection.cursor()
     cur.execute('''INSERT INTO users (user_id)
-                          VALUES (user_id_param);''')
+                          VALUES ('''+user_id_param+''');''')
     return
 
 
