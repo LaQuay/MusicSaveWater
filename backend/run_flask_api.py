@@ -21,27 +21,36 @@ def bye():
     rv = cur.fetchall()
     return str(rv)
 
+#user + type + duration + date
+
 @app.route("/createDatabase")
 def createDatabase():
     cur = mysql.connection.cursor()
     cur.execute('''CREATE TABLE IF NOT EXISTS users (
-                          id VARCHAR(32),
-                          PRIMARY KEY ( id )
-                        );''')
+                      id VARCHAR(32),
+                      PRIMARY KEY ( id )
+    );''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS showers (
+                      user_id VARCHAR(32),
+                      shower_type VARCHAR(32),
+                      duration VARCHAR(32),
+                      date_time VARCHAR(32),
+                      PRIMARY KEY ( user_id, date_time)
+    );''')
     cur.execute('''CREATE TABLE IF NOT EXISTS contratos (
                       id VARCHAR(32),
                       municipio VARCHAR(64),
                       distrito VARCHAR(64),
                       PRIMARY KEY ( id )
-                    );''')
+    );''')
     cur.execute('''CREATE TABLE IF NOT EXISTS consumos (
-                          id INT NOT NULL AUTO_INCREMENT,
-                          fecha VARCHAR(16),
-                          consumo INT,
-                          contrato_id VARCHAR(32),
-                          PRIMARY KEY (id),
-                          FOREIGN KEY (contrato_id) REFERENCES contratos(id)
-                        );''')
+                      id INT NOT NULL AUTO_INCREMENT,
+                      fecha VARCHAR(16),
+                      consumo INT,
+                      contrato_id VARCHAR(32),
+                      PRIMARY KEY (id),
+                      FOREIGN KEY (contrato_id) REFERENCES contratos(id)
+    );''')
     rv = cur.fetchall()
     return "Database created"
 
