@@ -86,8 +86,8 @@ def tracks(type, token):
 @app.route("/user/<user_id_param>", methods=['PUT'])
 def put_user(user_id_param):
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO users (id) VALUES ('MIAUUSER2');")
     cur.execute("INSERT INTO users (id) VALUES ('"+user_id_param+"');")
+    rv = cur.fetchall()
     return ""
 
 
@@ -102,6 +102,7 @@ def put_user_shower(user_id):
     cur = mysql.connection.cursor()
     cur.execute('''INSERT INTO showers (user_id, shower_type, duration, date_time)
                           VALUES ('''+user_id+''','''+shower_type+''','''+duration+''','''+date_time+''');''')
+    rv = cur.fetchall()
     #user + type + duration + date
     return
 
