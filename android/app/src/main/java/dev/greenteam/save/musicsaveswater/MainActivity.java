@@ -16,28 +16,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
+import dev.greenteam.save.musicsaveswater.controllers.SpotifyController;
 import kaaes.spotify.webapi.android.models.Album;
-import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SpotifyController.SpotifyAPICalls {
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int SECTION_MAIN_FRAGMENT = 1;
-    private static final String CLIENT_ID = "5b2bbb012c6d425f83c577444dc01eb6";
-    private static final String REDIRECT_URI = "musicsaveswater://callback";
     private Toolbar toolbar;
-    private SpotifyService spotifyService;
-    private String mAccessToken;
     private Handler handler = new Handler();
+    private SpotifyController.SpotifyAPICalls callbackSpotifyAPICalls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +55,16 @@ public class MainActivity extends AppCompatActivity
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
         onSectionAttached(SECTION_MAIN_FRAGMENT);
 
-        logInSpotify();
+        //Start Spotify Service
+        callbackSpotifyAPICalls = this;
+        SpotifyController.getInstance(this).getSpotifyService();
 
         //Get sample album when SpotifyService available
         Runnable sampleRunnable = new Runnable() {
             public void run() {
-                if (spotifyService != null) {
+                if (SpotifyController.getInstance(getBaseContext()).getSpotifyService() != null) {
                     Log.e(TAG, "Servicio disponible");
-                    getAlbum("2dIGnmEIy1WZIcZCFSj6i8");
+                    SpotifyController.getInstance(getBaseContext()).getAlbum("2dIGnmEIy1WZIcZCFSj6i8", callbackSpotifyAPICalls);
                 } else {
                     Log.e(TAG, "Servicio aun no disponible");
                     handler.postDelayed(this, 500);
@@ -76,6 +72,16 @@ public class MainActivity extends AppCompatActivity
             }
         };
         handler.postDelayed(sampleRunnable, 1000);
+    }
+
+    @Override
+    public void onGetAlbumResponseSuccess(Album album, Response response) {
+        Log.e(TAG, "Album success: " + album.name);
+    }
+
+    @Override
+    public void onGetAlbumResponseFailure(RetrofitError error) {
+        Log.e(TAG, "Album failure: " + error.toString());
     }
 
     @Override
@@ -171,50 +177,8 @@ public class MainActivity extends AppCompatActivity
         Log.e(TAG, "requestCode: " + requestCode + ", resultCode: " + resultCode);
 
         if (REQUEST_CODE == requestCode) {
-            mAccessToken = response.getAccessToken();
-            Log.e(TAG, "TOKEN: " + mAccessToken);
-            onTokenAvailable();
+            SpotifyController.getInstance(getBaseContext()).setAccessToken(response.getAccessToken());
+            SpotifyController.getInstance(getBaseContext()).onTokenAvailable();
         }
-    }
-
-    private void onTokenAvailable() {
-        SpotifyApi spotifyApi = new SpotifyApi();
-        spotifyApi.setAccessToken(mAccessToken);
-
-        spotifyService = spotifyApi.getService();
-    }
-
-    private void getAlbum(String albumID) {//"2dIGnmEIy1WZIcZCFSj6i8"
-        spotifyService.getAlbum(albumID, new Callback<Album>() {
-            @Override
-            public void success(Album album, Response response) {
-                Log.e(TAG, "Album success: " + album.name);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e(TAG, "Album failure: " + error.toString());
-            }
-        });
-    }
-
-    private void logInSpotify() {
-        final AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
-                .setScopes(new String[]{"playlist-read-private",
-                        "playlist-read-collaborative",
-                        "playlist-modify-public",
-                        "playlist-modify-private",
-                        "streaming",
-                        "user-follow-modify",
-                        "user-follow-read",
-                        "user-library-read",
-                        "user-library-modify",
-                        "user-read-private",
-                        "user-read-birthdate",
-                        "user-read-email",
-                        "user-top-read"})
-                .build();
-
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 }
